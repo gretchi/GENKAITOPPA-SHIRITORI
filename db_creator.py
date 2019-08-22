@@ -5,6 +5,7 @@ import re
 
 import jaconv
 from sqlalchemy.exc import IntegrityError
+from sqlalchemy.sql.expression import func
 
 from db import Database, Dictionaly
 from dict_loader import DictLoader
@@ -60,7 +61,7 @@ def main():
             message = f"{initial}:{length}"
 
 
-        for row in db.session.query(Dictionaly.kana, Dictionaly.length).filter(Dictionaly.kana.like(f"{initial}%")).filter_by(length=int(length)).group_by(Dictionaly.kana):
+        for row in db.session.query(Dictionaly.kana, Dictionaly.length).filter(Dictionaly.kana.like(f"{initial}%")).filter_by(length=int(length)).group_by(Dictionaly.kana).order_by(func.random()):
             suggest = row[0]
             if suggest in used:
                 continue
