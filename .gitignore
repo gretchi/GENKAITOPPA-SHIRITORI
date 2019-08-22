@@ -1,0 +1,9 @@
+# Dictionary database
+dict.sqlite3
+
+# Python cache files
+__pycache__/
+*.pyc
+
+# CSV file
+*.csv
