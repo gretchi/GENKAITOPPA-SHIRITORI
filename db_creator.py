@@ -28,18 +28,31 @@ def main():
     initial = ""
     length = -1
     used = []
+    last = ""
 
     message = ""
 
     pattern_hiragana = re.compile(r"^[ぁ-ん]$")
     pattern_digit = re.compile(r"^\d+$")
+    pattern_invalid = re.compile(r"^.*ん$")
 
     while True:
-        command = input(f"{message}> ")
+        command = ""
+        command = input(f"{message}:{last}> ")
 
         if len(command) == 0:
             if length == -1:
                 continue
+
+        elif len(command) != 0 and command[0] == ":":
+            striped_command = command.strip(":")
+            if len(striped_command):
+                print(striped_command)
+                last = striped_command
+            else:
+                last = ""
+
+            continue
 
         elif len(command) < 2:
             message = f"Syntax error"
@@ -63,7 +76,14 @@ def main():
 
         for row in db.session.query(Dictionaly.kana, Dictionaly.length).filter(Dictionaly.kana.like(f"{initial}%")).filter_by(length=int(length)).group_by(Dictionaly.kana).order_by(func.random()):
             suggest = row[0]
+
             if suggest in used:
+                continue
+            
+            if pattern_invalid.match(suggest):
+                continue
+            
+            if last != "" and suggest[-1] != last:
                 continue
 
             used.append(suggest)
